@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SQLManager v1.0 Documentation</title>
+<style>
+body{
+    font-family: Arial, sans-serif;
+    background:#f4f6f9;
+    margin:0;
+    padding:0;
+    line-height:1.6;
+}
+header{
+    background:#111827;
+    color:white;
+    padding:20px;
+    text-align:center;
+}
+section{
+    padding:20px 40px;
+    margin:20px;
+    background:white;
+    border-radius:8px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.08);
+}
+h2{
+    border-left:5px solid #2563eb;
+    padding-left:10px;
+    color:#111827;
+}
+code{
+    display:block;
+    background:#0f172a;
+    color:#22c55e;
+    padding:15px;
+    border-radius:6px;
+    overflow-x:auto;
+    margin-top:10px;
+}
+footer{
+    text-align:center;
+    padding:20px;
+    background:#111827;
+    color:white;
+}
+.badge{
+    display:inline-block;
+    padding:5px 10px;
+    background:#22c55e;
+    color:white;
+    border-radius:20px;
+    font-size:12px;
+}
+</style>
+</head>
+<body>
+
+<header>
+<h1>SQLManager v1.0 Documentation</h1>
+<p>Lightweight PHP Query Builder & Database Engine</p>
+<span class="badge">Production Ready</span>
+</header>
+
+<section>
+<h2>1️⃣ Installation</h2>
+<p>Include required files:</p>
+<code>
+require("config.php");
+require("SQLManager.php");
+
+$db = new SQLManager();
+</code>
+</section>
+
+<section>
+<h2>2️⃣ Database Configuration (config.php)</h2>
+<code>
+$pdo = new PDO(
+ "mysql:host=localhost;dbname=test_db;charset=utf8mb4",
+ "root",
+ ""
+);
+
+$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+</code>
+</section>
+
+<section>
+<h2>3️⃣ Select Data</h2>
+
+<h3>Get All Records</h3>
+<code>
+$db->table("users")->get();
+</code>
+
+<h3>Where Condition</h3>
+<code>
+$db->table("users")
+   ->where("id","=",1)
+   ->first();
+</code>
+
+<h3>Multiple Conditions</h3>
+<code>
+$db->table("users")
+   ->where("status","=","active")
+   ->orWhere("role","=","admin")
+   ->get();
+</code>
+
+<h3>Join</h3>
+<code>
+$db->table("users")
+   ->join("orders","users.id","=","orders.user_id")
+   ->get();
+</code>
+
+</section>
+
+<section>
+<h2>4️⃣ Insert Data</h2>
+
+<h3>Single Insert</h3>
+<code>
+$db->table("users")->insert([
+ "name"=>"John",
+ "email"=>"john@example.com"
+]);
+</code>
+
+<h3>Bulk Insert</h3>
+<code>
+$db->table("users")->insertBulk([
+ ["name"=>"A","email"=>"a@mail.com"],
+ ["name"=>"B","email"=>"b@mail.com"]
+]);
+</code>
+</section>
+
+<section>
+<h2>5️⃣ Update & Delete</h2>
+
+<h3>Update</h3>
+<code>
+$db->table("users")
+   ->where("id","=",1)
+   ->update([
+     "name"=>"Updated"
+   ]);
+</code>
+
+<h3>Delete</h3>
+<code>
+$db->table("users")
+   ->where("id","=",1)
+   ->delete();
+</code>
+</section>
+
+<section>
+<h2>6️⃣ Transactions</h2>
+<code>
+$db->beginTransaction();
+
+try{
+ $db->table("users")->insert([...]);
+ $db->commit();
+}catch(Exception $e){
+ $db->rollback();
+}
+</code>
+</section>
+
+<section>
+<h2>7️⃣ Schema Builder</h2>
+
+<h3>Create Table</h3>
+<code>
+$db->createTable("users", function($bp) use ($db){
+ $db->column_id($bp);
+ $db->column_string($bp,"name");
+ $db->column_string($bp,"email");
+});
+</code>
+
+<h3>Add Column</h3>
+<code>
+$db->addColumn("users","age INT NOT NULL");
+</code>
+
+<h3>Drop Column</h3>
+<code>
+$db->dropColumn("users","age");
+</code>
+</section>
+
+<section>
+<h2>8️⃣ Backup System</h2>
+<code>
+$db->fullBackup("backup.sql");
+</code>
+</section>
+
+<section>
+<h2>9️⃣ Mini ORM</h2>
+
+<h3>Load Model</h3>
+<code>
+$userModel = $db->model("users");
+</code>
+
+<h3>Find</h3>
+<code>
+$userModel->find(1);
+</code>
+
+<h3>Create</h3>
+<code>
+$userModel->create([
+ "name"=>"New User"
+]);
+</code>
+</section>
+
+<section>
+<h2>🔟 Debug Mode</h2>
+<code>
+$db->enableDebug();
+</code>
+<p>Shows SQL queries and bindings for debugging.</p>
+</section>
+
+<section>
+<h2>⚠️ Safe Mode</h2>
+<p>Prevents full table delete without WHERE.</p>
+<code>
+$db->disableSafeMode();
+</code>
+</section>
+
+<section>
+<h2>📊 Features Overview</h2>
+<ul>
+<li>Query Builder</li>
+<li>CRUD Engine</li>
+<li>Schema Builder</li>
+<li>Transactions</li>
+<li>Backup System</li>
+<li>Mini ORM</li>
+<li>Role-Based Access</li>
+<li>Debug Mode</li>
+</ul>
+</section>
+
+<footer>
+SQLManager v1.0 © 2026 | Developed for Production Use
+</footer>
+
+</body>
+</html>
